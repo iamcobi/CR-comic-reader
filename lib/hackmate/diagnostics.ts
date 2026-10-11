@@ -69,7 +69,9 @@ export async function exportLogs() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export function installRequestLogging() {
+  const marker = Symbol.for("pip.requestLogging");
   const original = window.fetch;
+  if ((original as typeof fetch & { [key: symbol]: boolean })[marker]) return () => {};
   const wrapped: typeof fetch = async (input, options) => {
     const path = new URL(
       typeof input === "string"
@@ -82,7 +84,7 @@ export function installRequestLogging() {
     if (!path.startsWith("/api/")) return original.call(window, input, options);
     const id = crypto.randomUUID(),
       started = performance.now();
-    logEvent("request.started", { id, path, method: options?.method || "GET" });
+    logEvent("request.started", { id, path, method: options?.method || (input instanceof Request ? input.method : "GET") });
     try {
       const response = await original.call(window, input, options);
       logEvent("request.headers", {
@@ -103,6 +105,7 @@ export function installRequestLogging() {
       throw error;
     }
   };
+  Object.defineProperty(wrapped, marker, { value: true });
   window.fetch = wrapped;
   return () => {
     if (window.fetch === wrapped) window.fetch = original;

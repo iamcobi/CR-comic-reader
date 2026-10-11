@@ -13,7 +13,7 @@ npm run dev
 ```
 
 On Windows, use `Copy-Item .env.example .env` instead of `cp`.
-Add your NVIDIA and ElevenLabs keys to `.env`. Open http://localhost:5173. Actual keys are deliberately excluded from Git.
+Add your NVIDIA and ElevenLabs keys to `.env`. Open http://localhost:5180. Actual keys are deliberately excluded from Git.
 NVIDIA is the default brain. The separate Gemini adapter can be configured later. ElevenLabs handles microphone transcription and Chris's expressive voice; the configured voice model is V4 Turbo. Account availability and quotas depend on your provider accounts.
 
 ## How it works
@@ -37,7 +37,7 @@ node node_modules/typescript/bin/tsc --noEmit
 npm run build
 ```
 
-There are 73 automated checks covering actions, intake, streaming, voice lifecycle, and the missing-team regression. Provider and microphone tests use synthetic data or mocks. Actual microphone use requires browser permission.
+There are 80 automated checks covering actions, intake, streaming, voice lifecycle, and the missing-team regression. Provider and microphone tests use synthetic data or mocks. Actual microphone use requires browser permission.
 
 See [START-HERE.md](START-HERE.md) for a beginner-friendly walkthrough and [MOTION-CATALOG.md](MOTION-CATALOG.md) for every gesture.
 

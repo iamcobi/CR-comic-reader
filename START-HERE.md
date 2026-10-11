@@ -19,7 +19,7 @@ node 'C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js' run install:ci
 node scripts/run-framework.mjs dev
 ```
 
-Open http://127.0.0.1:5173/. Your existing `.env` contains your server keys. Do not overwrite it or share it.
+Open http://127.0.0.1:5180/. Your existing `.env` contains your server keys. Do not overwrite it or share it.
 
 ## Start a hackathon
 

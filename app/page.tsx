@@ -23,6 +23,7 @@ import {
   isUnknown,
   normalizeLevel,
 } from "@/lib/hackmate/intake";
+import { conversationAction, isContextQuestion, repairClockHours } from "@/lib/hackmate/conversation-route";
 import { readDocuments } from "@/lib/hackmate/read-documents";
 import { saveIntroduction } from "@/lib/hackmate/team-introduction";
 import {
@@ -183,6 +184,9 @@ export default function Home() {
             documents: saved.documents.filter((d) => d.id !== "sample"),
             intake: currentIntake(saved),
           };
+          const repaired = repairClockHours(restored);
+          if (repaired !== restored) logEvent("intake.repaired_clock_hours", { previousHours: restored.hours });
+          restored = repaired;
           const introductionText = saved.messages
             .filter((m) => m.role === "user" && /\bmy name is\b/i.test(m.text))
             .at(-1)?.text;
@@ -435,6 +439,7 @@ export default function Home() {
     }
     if (
       intake.stage !== "done" &&
+      !(state.current.documents.length && isContextQuestion(text)) &&
       !(
         intake.stage === "team" &&
         !text.includes("|") &&
@@ -491,16 +496,7 @@ export default function Home() {
     const version = session.current;
     const controller = new AbortController();
     request.current = controller;
-    const action =
-      /^(add|assign|complete|finish|mark done|block|unblock|choose|select|let['’]?s build)\b/i.test(
-        text,
-      )
-        ? "chat"
-        : /\b(ideas?|suggest projects?|recommend projects?)\b/i.test(text)
-          ? "ideas"
-          : /\b(game plan|make.*plan|create.*plan|build.*plan)\b/i.test(text)
-            ? "plan"
-            : "chat";
+    const action = conversationAction(text, snapshot);
     if (action === "plan" && !snapshot.selectedIdea) {
       say(
         "Let’s choose an idea first. Ask me for project ideas, then pick one to plan.",
@@ -541,6 +537,8 @@ export default function Home() {
       !/\b(add|delete|remove|save|update|assign|complete|finish|mark|choose|select|build|change|create|team|member)\b/i.test(
         text,
       );
+    const startedAt = performance.now();
+    let serverId = "", firstText = false;
     logEvent("assistant.started", {
       stage: snapshot.intake?.stage || "legacy",
       action,
@@ -560,6 +558,7 @@ export default function Home() {
         }),
         signal: controller.signal,
       });
+      serverId = response.headers.get("X-Pip-Request-Id") || "";
       let result: AIResult & { error?: string };
       if (
         response.headers
@@ -587,6 +586,10 @@ export default function Home() {
               if (version !== session.current) return;
               if (event.error) throw new Error(event.error);
               if (event.text !== undefined) {
+                if (!firstText) {
+                  firstText = true;
+                  logEvent("assistant.first_text", { serverId, milliseconds: Math.round(performance.now() - startedAt) });
+                }
                 // Mutation previews are withheld until their operations validate.
                 if (
                   maySpeakEarly &&
@@ -720,6 +723,8 @@ export default function Home() {
       state.current = next;
       setW(next);
       logEvent("assistant.committed", {
+        serverId,
+        milliseconds: Math.round(performance.now() - startedAt),
         operations: (result.operations || []).map((op) => op.type).join(","),
         members: next.members.length,
         stage: currentIntake(next).stage,
@@ -739,7 +744,7 @@ export default function Home() {
         animateSequence(gestures);
       }
     } catch (e) {
-      logEvent("assistant.failed", { canceled: controller.signal.aborted });
+      logEvent("assistant.failed", { serverId, canceled: controller.signal.aborted, milliseconds: Math.round(performance.now() - startedAt), category: e instanceof SyntaxError ? "invalid_response" : "request_or_stream" });
       if (version !== session.current) return;
       setError(e instanceof Error ? e.message : "Something went wrong.");
       animate("error");

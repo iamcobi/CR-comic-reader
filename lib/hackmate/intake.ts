@@ -1,3 +1,4 @@
+import { buildHours } from "./conversation-route";
 import type { Workspace, Provider } from "./types";
 
 export const stages = [
@@ -198,12 +199,12 @@ export function answerIntake(
     ];
   }
   if (stage === "hours") {
-    const hours = Number(text.match(/\b\d+(?:\.\d+)?\b/)?.[0]);
+    const hours = buildHours(text);
     if (!hours || hours > 1000)
       return {
         workspace: next,
         answer:
-          "Give me the number of build hours, or tell me the schedule is unknown.",
+          "That gives me a deadline, but I need your usable coding time. About how many hours can you work, excluding sleep? For example: 12 hours. If you aren’t sure, say so.",
         accepted: false,
       };
     next.hours = hours;
