@@ -67,7 +67,7 @@ export function currentIntake(w: Workspace): Intake {
     }
     const known: Record<string, boolean> = {
       event: Boolean(w.event.trim()),
-      team: Boolean(w.members.length && w.members.every(m => m.name.trim() && m.skills.trim() && m.level)),
+      team: Boolean(w.intake.confirmed?.includes("team") && w.members.length && w.members.every(m => m.name.trim() && m.skills.trim() && m.level)),
       experience: Boolean(w.pastExperience?.trim()),
       goal: Boolean(w.goal.trim()),
       documents: w.documents.some(d => d.id !== "sample" && !d.id.startsWith("research-")),
@@ -100,7 +100,7 @@ export function advance(w: Workspace, skipped = false): Workspace {
     ...w,
     intake: {
       ...intake,
-      confirmed: [...new Set([...(intake.confirmed || []), ...(intake.stage === "hours" && !skipped ? ["hours"] : [])])],
+      confirmed: [...new Set([...(intake.confirmed || []), ...(!skipped ? [intake.stage] : [])])],
       stage:
         stages[Math.min(stages.indexOf(intake.stage) + 1, stages.length - 1)],
       skipped: skipped

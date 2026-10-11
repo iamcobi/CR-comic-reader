@@ -1,5 +1,6 @@
 import type { AIInput, AIResult, Idea, Workspace } from "./types";
 import { demoConversation } from "./demo-conversation";
+import { isIdeaFollowup } from "./conversation-route";
 
 export function initialWorkspace(): Workspace {
   return {
@@ -89,6 +90,17 @@ export function initialWorkspace(): Workspace {
 export function demoResponse(input: AIInput): AIResult {
   const w = input.workspace;
   if (input.action === "chat") {
+    if (isIdeaFollowup(input.question || "", w)) {
+      const q = (input.question || "").toLowerCase();
+      const numbered = q.match(/\b(?:idea|project|number)\s*#?\s*([1-9])\b/);
+      const ordinal = q.match(/\b(first|second|third|fourth|fifth|sixth)\b/)?.[1];
+      const index = numbered ? Number(numbered[1]) - 1 : ordinal ? ["first", "second", "third", "fourth", "fifth", "sixth"].indexOf(ordinal) : -1;
+      const named = w.ideas.filter(i => q.includes(i.title.toLowerCase()));
+      const ideas = /\b(?:each|all|these ideas|the ideas|them)\b/.test(q) ? w.ideas
+        : named.length ? named : index >= 0 ? w.ideas.slice(index, index + 1) : w.selectedIdea ? [w.selectedIdea] : w.ideas.length === 1 ? w.ideas : [];
+      if (!ideas.length) return { answer: `Which idea should I expand? ${w.ideas.map((i, n) => `${n + 1}: ${i.title}`).join("; ")}.`, operations: [], demo: true };
+      return { answer: "Demo explanation based on the saved ideas:\n\n" + ideas.map(i => `${i.title}\nProblem: ${i.problem}\nHow it works: ${i.solution}\nSmallest prototype: demonstrate one complete journey through this solution, using a small sample input, the core processing step, and a visible result. Connect ${i.stack.join(" + ") || "the proposed stack"} after the screen works with sample data.\nWhy it fits: ${i.fit}\nBuild estimate: ${i.hours} hours; ${i.difficulty}.\nRisks: ${i.risks.join(" ")}\nDemo: show the user’s starting problem, enter a realistic example, and explain the result. Reserve time to test a failure case and rehearse the pitch.`).join("\n\n"), operations: [], demo: true };
+    }
     const conversational = demoConversation(input);
     if (conversational) return conversational;
   }

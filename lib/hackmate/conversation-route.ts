@@ -7,6 +7,7 @@ export function isContextQuestion(text: string) {
     !/\b(?:don't have|do not have|no documents|no rules)\b/i.test(text);
 }
 export function conversationAction(text: string, w: Workspace): AIInput["action"] {
+  if (isIdeaFollowup(text, w)) return "chat";
   if (/^(?:why|how|what|which|could you explain|can you explain)\b/i.test(text.trim())) return "chat";
   if (isContextQuestion(text) && !/\b(?:make|create|generate|suggest|recommend)\b/i.test(text)) return "chat";
   if (w.ideas.length && /\b(?:explain|elaborate|describe|compare|details|see|show|made up|already)\b/i.test(text) &&
@@ -15,6 +16,13 @@ export function conversationAction(text: string, w: Workspace): AIInput["action"
   if (/\b(ideas?|suggest projects?|recommend projects?)\b/i.test(text)) return "ideas";
   if (/\b(game plan|make.*plan|create.*plan|build.*plan)\b/i.test(text)) return "plan";
   return "chat";
+}
+
+export function isIdeaFollowup(text: string, w: Workspace) {
+  if (!w.ideas.length || /\b(?:new|different|another|more ideas|additional ideas)\b/i.test(text)) return false;
+  const detail = /\b(?:more (?:info(?:rmation)?|detail)|tell me more|expand|go deeper|break (?:it|them) down|explain|elaborate|describe|compare|details|how .*work)\b/i.test(text);
+  const reference = /\b(?:ideas?|projects?|recommendations|suggestions|them|it|first|second|third|fourth|fifth|sixth)\b/i.test(text) || w.ideas.some(i => text.toLowerCase().includes(i.title.toLowerCase()));
+  return detail && (reference || /^(?:please )?(?:tell me more|give me more (?:info(?:rmation)?|details?)|expand|go deeper)[.!?]?$/i.test(text.trim()));
 }
 
 // Clock times and dates are not durations. Ask for the usable coding hours instead.

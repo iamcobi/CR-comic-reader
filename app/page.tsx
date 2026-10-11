@@ -23,7 +23,7 @@ import {
   isUnknown,
   normalizeLevel,
 } from "@/lib/hackmate/intake";
-import { conversationAction, isContextQuestion, repairClockHours, recoverPendingHours } from "@/lib/hackmate/conversation-route";
+import { conversationAction, isContextQuestion, isIdeaFollowup, repairClockHours, recoverPendingHours } from "@/lib/hackmate/conversation-route";
 import { rememberContext } from "@/lib/hackmate/context-memory";
 import { readDocuments } from "@/lib/hackmate/read-documents";
 import { saveIntroduction } from "@/lib/hackmate/team-introduction";
@@ -308,6 +308,7 @@ export default function Home() {
         return;
       }
       const findings = data.findings || [];
+      logEvent("research.completed", { findings: findings.length });
       setResearchLinks(findings);
       if (!findings.length)
         setReceipt(
@@ -337,7 +338,9 @@ export default function Home() {
         state.current = next;
         setW(next);
         setReceipt(
-          "I found public research leads. I still need your official hackathon materials to confirm the rules.",
+          state.current.documents.some(d => !d.id.startsWith("research-") && d.id !== "sample")
+            ? "Public search leads saved. I’ll check recommendations against your uploaded materials."
+            : "Public search leads saved. Please attach the official materials to confirm the rules.",
         );
       }
     } catch {
@@ -419,16 +422,16 @@ export default function Home() {
     }
     const beforeStage = currentIntake(state.current).stage;
     const remembered = rememberContext(state.current, text);
+    const introduction = saveIntroduction(remembered.workspace, text);
     if (remembered.fields.length) {
       state.current = remembered.workspace;
       setW(remembered.workspace);
       logEvent("context.saved", { fields: remembered.fields.join(","), stage: currentIntake(remembered.workspace).stage });
-      if (beforeStage !== "done" && !/[?]|\b(?:what|why|how|which|show|suggest|give)\b/i.test(text)) {
+      if (beforeStage !== "done" && !introduction && !/[?]|\b(?:what|why|how|which|show|suggest|give)\b/i.test(text)) {
         recordLocal(remembered.workspace, text, `Got it. ${questions[currentIntake(remembered.workspace).stage]}`, "saving");
         return;
       }
     }
-    const introduction = saveIntroduction(state.current, text);
     if (introduction) {
       recordLocal(
         introduction.workspace,
@@ -438,11 +441,22 @@ export default function Home() {
       );
       logEvent("team.introduction_saved", {
         members: introduction.workspace.members.length,
+        stage: currentIntake(introduction.workspace).stage,
+        incompleteProfiles: introduction.workspace.members.filter(m => !m.skills || !m.level).length,
       });
       animateSequence(["welcoming-member", "saving", "asking"]);
       return;
     }
     const intake = currentIntake(state.current);
+    if (/\bhow\b.*\b(?:search|web|online)\b/i.test(text)) {
+      recordLocal(state.current, text, "I search DuckDuckGo using the hackathon name for official rules and past Devpost projects. I save the result links and snippets as research leads; I don’t open those pages to verify them. Your uploaded official documents are what I use to confirm rules. Say ‘search the web’ to refresh the event research.", "explaining");
+      return;
+    }
+    if (/^(?:please )?(?:search (?:the )?(?:web|internet|online)|look (?:it )?up online|refresh (?:the )?(?:research|web search))[.!]?$/i.test(text.trim())) {
+      recordLocal(state.current, text, state.current.event ? "I’ll look up public results for our hackathon now. The links will appear under research when the search finishes." : questions.event, "searching");
+      if (state.current.event) void researchEvent(state.current.event);
+      return;
+    }
     if (/bond|check.?in|team morale/i.test(text)) {
       recordLocal(
         state.current,
@@ -454,7 +468,8 @@ export default function Home() {
     }
     if (
       intake.stage !== "done" &&
-      !(state.current.documents.length && isContextQuestion(text)) &&
+      !isContextQuestion(text) &&
+      !isIdeaFollowup(text, state.current) &&
       !(
         intake.stage === "team" &&
         !text.includes("|") &&
@@ -566,6 +581,7 @@ export default function Home() {
       stage: snapshot.intake?.stage || "legacy",
       action,
       members: snapshot.members.length,
+      ideaFollowup: isIdeaFollowup(text, snapshot),
     });
     try {
       const response = await fetch("/api/ai", {

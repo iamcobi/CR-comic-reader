@@ -16,6 +16,12 @@ Created with the [brag skill](https://github.com/latent-spaces/brag) and Hyperfr
 
 ## Run on your own computer
 
+Tell Pip about teammates naturally, for example: “I'm Taylor, a beginner in Python, and Alex is intermediate in C++.” Clear introductions save immediately; missing skills and experience are collected one at a time. Say “team is ready” when everyone is included, or explicitly say you're working solo. You can add someone later with “Add Jordan to our team, beginner in React.”
+
+After suggestions, try “Tell me more about idea 2” or “Expand all the ideas.” This explains the saved ideas without choosing one or replacing them. “Give me more ideas” asks for new suggestions.
+
+Pip searches DuckDuckGo for the event's official rules and previous Devpost projects when you supply the event name. Say “search the web” to refresh those results. Research sources contain links and search snippets; Pip does not open the linked pages to verify them. Upload official hackathon materials to establish the rules.
+
 ### Windows: double-click launcher
 
 1. Install [Node.js LTS](https://nodejs.org/) (22.13 or newer). Restart any open terminals after installation.
