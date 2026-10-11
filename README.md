@@ -2,6 +2,18 @@
 
 An assistant-first hackathon companion: introduce your team, attach the event rules, and talk through a realistic project and game plan. Pip has 30 SVG gestures and can grow extra arms for multitasking.
 
+## Watch the launch video
+
+Meet HackMate in this **25-second launch film for CodeRED Orion**: animated Pip, real app screens, and the story of how HackMate inspired Shiftboard.
+
+[![Watch the HackMate launch video](docs/media/hackmate-launch.jpg)](https://github.com/iamcobi/CR-hack-bot/blob/main/docs/media/hackmate-launch.mp4)
+
+**[Watch the video](https://github.com/iamcobi/CR-hack-bot/blob/main/docs/media/hackmate-launch.mp4)** · **[Download the MP4](https://raw.githubusercontent.com/iamcobi/CR-hack-bot/main/docs/media/hackmate-launch.mp4)**
+
+1080p, with music and sound effects. This is a designed product film using real app screenshots; the Shiftboard schedule uses demo data.
+
+Created with the [brag skill](https://github.com/latent-spaces/brag) and Hyperframes. Music: “Happy Beats / Business Moves vol 12” by ende.app, bundled with brag. Sound effects: Kenney (CC0). Fonts: Manrope and DM Sans.
+
 ## Run on your own computer
 
 ### Windows: double-click launcher
