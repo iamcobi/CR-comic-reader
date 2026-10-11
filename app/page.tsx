@@ -762,8 +762,8 @@ export default function Home() {
         0,
       );
       for (const f of Array.from(files)) {
-        if (f.size > 4 * 1024 * 1024)
-          throw new Error("Keep each file under 4 MB.");
+        if (f.size > 50 * 1024 * 1024)
+          throw new Error("Keep each file at 50 MB or smaller.");
         const isPDF = f.type === "application/pdf" || /\.pdf$/i.test(f.name);
         const text = /\.(txt|md|csv)$/i.test(f.name) || isPDF;
         if (!text && state.current.provider === "nvidia")
@@ -796,7 +796,9 @@ export default function Home() {
           });
         size += content.length;
         if (size > 8 * 1024 * 1024)
-          throw new Error("Keep your combined document content under 8 MB.");
+          throw new Error(
+            "Keep the combined extracted text and image content under 8 MB. Larger PDFs are supported when their extracted text fits this limit.",
+          );
         added.push({
           id: crypto.randomUUID(),
           name: f.name,

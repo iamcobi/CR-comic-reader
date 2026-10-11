@@ -42,7 +42,7 @@ You can describe the team naturally: “I’m Collins, I know React, and I’m a
 
 ## Documents and research
 
-Use the paperclip to attach a readable PDF, TXT, Markdown, or CSV, or paste the brief into the conversation when Pip asks. PDF text is extracted in the browser before NVIDIA receives it. Image-only/scanned PDFs need a readable text version; Pip shows a clear message rather than guessing rules. Files are limited to 4 MB, PDFs to 80 pages and 100,000 extracted characters.
+Use the paperclip to attach a readable PDF, TXT, Markdown, or CSV, or paste the brief into the conversation when Pip asks. PDF text is extracted in the browser before NVIDIA receives it. Image-only/scanned PDFs need a readable text version; Pip shows a clear message rather than guessing rules. Each original file can be up to 50 MB. PDFs are limited to 80 pages and 100,000 extracted characters; combined extracted text and image content remains limited to 8 MB.
 
 After learning the public event name, Pip searches for official event sources and previous hackathon project leads. Only the event name goes into the public search query. Research links are saved with the workspace. Search excerpts and old event pages are inspiration, not verified current rules; the official materials you supply remain necessary unless you explicitly say you do not have them.
 
