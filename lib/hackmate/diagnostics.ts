@@ -5,6 +5,24 @@ export type Diagnostic = {
   details: Record<string, string | number | boolean>;
 };
 let pending: Promise<void> = Promise.resolve();
+// Capture locations, never error messages (which can contain documents or keys).
+export function installRuntimeLogging(onFailure: () => void) {
+  const report = (event: string, reason: unknown) => {
+    const error = reason instanceof Error ? reason : undefined;
+    const frame = error?.stack?.split("\n").slice(1).find(line => /https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?\//.test(line));
+    const location = frame?.match(/https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?\/([^\s)?]+)(?:\?[^\s)]*)?/)?.[1] || "unknown";
+    logEvent(event, { name: error?.name || typeof reason, location: location.slice(0, 250) });
+    onFailure();
+  };
+  const rejection = (event: PromiseRejectionEvent) => report("runtime.unhandled_rejection", event.reason);
+  const error = (event: ErrorEvent) => report("runtime.error", event.error);
+  window.addEventListener("unhandledrejection", rejection);
+  window.addEventListener("error", error);
+  return () => {
+    window.removeEventListener("unhandledrejection", rejection);
+    window.removeEventListener("error", error);
+  };
+}
 export function logEvent(event: string, details: Diagnostic["details"] = {}) {
   const entry = { at: new Date().toISOString(), event, details };
   console.info("[Pip]", JSON.stringify(entry));

@@ -2,6 +2,7 @@ import * as pdf from "pdfjs-dist";
 import { createWorker, OEM, PSM, type Worker as OCRWorker } from "tesseract.js";
 import { extractPDFText, type PDFProgress } from "./pdf-text";
 import { logEvent } from "./diagnostics";
+import { cleanupResource } from "./cleanup";
 
 type ReadOptions = {
   signal?: AbortSignal;
@@ -59,7 +60,7 @@ export async function readPDF(
     currentPage = 0,
     total = 0;
   const abortOCR = () => {
-    void ocr?.terminate();
+    void cleanupResource(() => ocr?.terminate(), "ocr");
   };
   signal?.addEventListener("abort", abortOCR, { once: true });
   try {
@@ -105,7 +106,7 @@ export async function readPDF(
               });
               void starting.then(
                 (worker) => {
-                  if (closed || signal?.aborted) void worker.terminate();
+                  if (closed || signal?.aborted) void cleanupResource(() => worker.terminate(), "late-ocr");
                 },
                 () => {},
               );
@@ -213,7 +214,7 @@ export async function readPDF(
   } finally {
     closed = true;
     signal?.removeEventListener("abort", abortOCR);
-    await ocr?.terminate();
-    await loading.destroy();
+    await cleanupResource(() => ocr?.terminate(), "ocr");
+    await cleanupResource(() => loading.destroy(), "pdf");
   }
 }

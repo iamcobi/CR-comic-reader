@@ -30,6 +30,7 @@ import { saveIntroduction } from "@/lib/hackmate/team-introduction";
 import {
   logEvent,
   installRequestLogging,
+  installRuntimeLogging,
   exportLogs,
   readLogs,
 } from "@/lib/hackmate/diagnostics";
@@ -80,6 +81,7 @@ export default function Home() {
     >([]),
     [preview, setPreview] = useState<Motion>("greeting");
   const state = useRef(w),
+    storageReady = useRef(false),
     timeout = useRef<ReturnType<typeof setTimeout> | null>(null),
     input = useRef<HTMLInputElement>(null),
     composerInput = useRef<HTMLInputElement>(null),
@@ -95,6 +97,9 @@ export default function Home() {
   motionRef.current = motion;
   state.current = w;
   useEffect(() => installRequestLogging(), []);
+  useEffect(() => installRuntimeLogging(() => {
+    setError("A background action failed. Your saved workspace is kept. Please retry the action; the failure location is recorded in Settings → View recent diagnostics.");
+  }), []);
   function animate(next: Motion, persistent = false, minimum = 0) {
     if (motionRef.current !== next) logEvent("motion", { name: next });
     if (timeout.current) clearTimeout(timeout.current);
@@ -173,7 +178,7 @@ export default function Home() {
       .then((status: unknown) => {
         if (active) setServerStatus(status as typeof serverStatus);
       })
-      .catch(() => {});
+      .catch(() => { if (active) logEvent("startup.configuration_failed"); });
     loadWorkspace()
       .then((saved) => {
         if (!active) return;
@@ -216,9 +221,12 @@ export default function Home() {
           );
           animate("remembering");
         }
+        storageReady.current = true;
         setReady(true);
       })
       .catch(() => {
+        if (!active) return;
+        logEvent("startup.workspace_failed");
         setReady(true);
         setError("Could not load saved workspace. Changes may not persist.");
       });
@@ -230,7 +238,7 @@ export default function Home() {
     };
   }, []);
   useEffect(() => {
-    if (ready)
+    if (ready && storageReady.current)
       saveWorkspace(w).catch(() =>
         setError(
           "Your browser could not save this change. Export your plan to keep a copy.",
@@ -352,6 +360,7 @@ export default function Home() {
   }
   function resetWorkspace() {
     if (!ready) return;
+    storageReady.current = true;
     speechGesture.current = null;
     session.current++;
     request.current?.abort();
@@ -411,6 +420,16 @@ export default function Home() {
     }
   }
   async function send(text: string) {
+    try {
+      await sendMessage(text);
+    } catch {
+      logEvent("assistant.local_failed");
+      sending.current = false;
+      setBusy(false);
+      setError("That action could not finish. Your saved team and plan are still here. Please retry.");
+    }
+  }
+  async function sendMessage(text: string) {
     if (!text.trim() || sending.current || !ready) return;
     if (
       /^(?:reset everything|reset (?:the )?workspace|start (?:a )?new hackathon|new hackathon(?: team)?|new team)[.!]?$/i.test(

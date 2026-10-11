@@ -44,7 +44,14 @@ async function writeWorkspace(workspace: Workspace): Promise<void> {
 
 let writes: Promise<void> = Promise.resolve();
 export function saveWorkspace(workspace: Workspace): Promise<void> {
-  const snapshot = structuredClone(workspace);
-  writes = writes.catch(() => {}).then(() => writeWorkspace(snapshot));
-  return writes;
+  // A cloning/storage error must use the same rejection path as async writes.
+  try {
+    const snapshot = structuredClone(workspace);
+    const write = writes.then(() => writeWorkspace(snapshot));
+    // Keep the internal queue settled while returning errors to the caller.
+    writes = write.catch(() => {});
+    return write;
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }

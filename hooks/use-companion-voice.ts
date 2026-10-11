@@ -317,6 +317,22 @@ export function useCompanionVoice(
     expression = "understanding",
     continuation = false,
   ) {
+    try {
+      await playSpeech(text, expression, continuation);
+    } catch {
+      speechQueue.current = [];
+      speechBusy.current = false;
+      setSpeaking(false);
+      callbacks.current.onState("idle");
+      logEvent("voice.failed", { reason: "browser_initialization" });
+      callbacks.current.onError("Voice could not start. You can keep chatting by text.");
+    }
+  }
+  async function playSpeech(
+    text: string,
+    expression: string,
+    continuation: boolean,
+  ) {
     if (!continuation) stopSpeaking();
     speechBusy.current = true;
     logEvent("voice.requested", {

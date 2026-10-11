@@ -326,6 +326,16 @@ try {
     assert.equal(s.transcript.length, 0);
     s.voice.endSession();
   });
+  await test("Browser speech initialization failure is caught without rejecting", async () => {
+    const Constructor = globalThis.SpeechSynthesisUtterance;
+    globalThis.SpeechSynthesisUtterance = class { constructor() { throw new Error("Fixture browser speech failure"); } };
+    try {
+      const s = setup();
+      await assert.doesNotReject(s.voice.speak("Test reply"));
+      assert.match(s.errors.at(-1), /Voice could not start/);
+      s.voice.endSession();
+    } finally { globalThis.SpeechSynthesisUtterance = Constructor; }
+  });
   console.log(
     `${passed} mocked voice lifecycle checks passed. No microphone was recorded.`,
   );
