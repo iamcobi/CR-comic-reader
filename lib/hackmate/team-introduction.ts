@@ -63,7 +63,7 @@ export function saveIntroduction(w: Workspace, text: string) {
       : [...w.members, member],
   };
   const complete = next.members.every((m) => m.name && m.skills && m.level);
-  const solo = /(?:only me|just me|by myself|solo|only myself)/i.test(supplied);
+  const solo = /(?:only me|just me|by myself|solo|only myself|only (?:person|one|member) (?:in|on) (?:the |our |this )?team)/i.test(supplied);
   if (complete && solo) next = advance(next);
   const answer = !member.skills
     ? `You’re saved on our team, ${name}. What coding skills do you have?`

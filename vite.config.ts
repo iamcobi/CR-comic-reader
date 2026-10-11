@@ -1,6 +1,6 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
+import { existsSync, readFileSync } from "node:fs";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
 import { connectorPreview } from "./build/connector-preview-plugin.mjs";
@@ -8,6 +8,12 @@ import { connectorPreview } from "./build/connector-preview-plugin.mjs";
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
 
+// Hosting metadata belongs to the creator's deployment, not a downloaded clone.
+// Pip's local workspace uses IndexedDB and needs no D1/R2 bindings.
+const hostingPath = new URL("./.openai/hosting.json", import.meta.url);
+const hostingConfig: { d1?: string | null; r2?: string | null } = existsSync(hostingPath)
+  ? JSON.parse(readFileSync(hostingPath, "utf8"))
+  : { d1: null, r2: null };
 const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.

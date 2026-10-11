@@ -4,22 +4,19 @@ Pip is a browser assistant with a black-and-white SVG character, 30 action gestu
 
 ## Start locally
 
-In this folder, use Node 22.13 or newer:
+On Windows, install Node.js 22.13 or newer, extract the GitHub ZIP, and double-click **START-PIP.bat** in this folder. It installs dependencies on the first run, creates `.env` if needed, starts the server, and opens your browser when ready.
 
-```powershell
-npm run install:ci
-# For a fresh installation only: copy .env.example to .env and add your keys.
+Add your own NVIDIA and ElevenLabs API keys to `.env`, save it, and restart the launcher for live replies and voice. You can explore Demo mode in Settings without keys. Keep the server window open and press Ctrl+C to stop. Never overwrite an existing `.env` or share its keys.
+
+For terminal setup on any supported computer:
+
+```sh
+npm install
+# First installation only: copy .env.example to .env and add your own keys.
 npm run dev
 ```
 
-On this Windows machine, the direct commands also work:
-
-```powershell
-node 'C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js' run install:ci
-node scripts/run-framework.mjs dev
-```
-
-Open http://127.0.0.1:5180/. Your existing `.env` contains your server keys. Do not overwrite it or share it.
+Open **http://127.0.0.1:5173/**. See [README.md](README.md) for download steps and troubleshooting.
 
 ## Start a hackathon
 
@@ -110,7 +107,7 @@ For ordinary conversation, the first completed sentence begins voice generation 
 
 Under Settings, choose **Export diagnostic logs**. It downloads a JSON file with the last 500 request, action, save, gesture, and voice events. These stay in a separate browser database after reloading or resetting your hackathon. They exclude prompts, documents, audio, and keys. Server terminal logs include matching request IDs. API response headers measure time to headers, while `assistant.committed` marks a completed response.
 
-Run `npm test` for all 61 automated checks, including the failed conversational introduction and queued-speech cancellation. Tests cannot replace checking your physical microphone and permissions.
+Run `npm test` for all 84 automated checks, including the failed conversational introduction and queued-speech cancellation. Tests cannot replace checking your physical microphone and permissions.
 
 
 ## How image PDFs are read

@@ -38,4 +38,19 @@ test('Nested request logging cannot double wrap a fetch',()=>{
  const undo=m.installRequestLogging(), first=window.fetch;
  const secondUndo=m.installRequestLogging();assert.equal(window.fetch,first);secondUndo();assert.equal(window.fetch,first);undo();assert.notEqual(window.fetch,first);delete globalThis.window;
 });
+test('Real speech answers with number words finish intake',()=>{
+ for (const text of ['Four.', 'about four', 'About four hours', "I can work for about four hours is what I'm saying", 'twenty-four hours', 'four and a half hours', 'half an hour']) {
+  const r=m.answerIntake(w,text);assert.equal(r.accepted,true);assert.equal(r.workspace.intake.stage,'done');
+ }
+ assert.equal(m.buildHours('About four hours'),4);assert.equal(m.buildHours('twenty-four hours'),24);assert.equal(m.buildHours('four and a half hours'),4.5);
+});
+test('Unanswered clock times remain unconfirmed',()=>{
+ assert.equal(m.buildHours("So I'll be sleeping from now till like eight AM"),null);
+ assert.equal(m.buildHours('till 1 PM tomorrow'),null);
+});
+test('Already supplied speech is recovered after a reload without another question',()=>{
+ const pending={...w,messages:[{role:'user',text:'I can work for about four hours is what I am saying'},{role:'assistant',text:'Please tell me the hours'}]};
+ const recovered=m.recoverPendingHours(pending);assert.equal(recovered.hours,4);assert.equal(recovered.intake.stage,'done');
+ assert.equal(m.recoverPendingHours({...pending,intake:{stage:'goal',skipped:[]}}).intake.stage,'goal');
+});
 console.log(passed+' conversation regression checks passed.');

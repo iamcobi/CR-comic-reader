@@ -23,7 +23,7 @@ import {
   isUnknown,
   normalizeLevel,
 } from "@/lib/hackmate/intake";
-import { conversationAction, isContextQuestion, repairClockHours } from "@/lib/hackmate/conversation-route";
+import { conversationAction, isContextQuestion, repairClockHours, recoverPendingHours } from "@/lib/hackmate/conversation-route";
 import { readDocuments } from "@/lib/hackmate/read-documents";
 import { saveIntroduction } from "@/lib/hackmate/team-introduction";
 import {
@@ -186,7 +186,8 @@ export default function Home() {
           };
           const repaired = repairClockHours(restored);
           if (repaired !== restored) logEvent("intake.repaired_clock_hours", { previousHours: restored.hours });
-          restored = repaired;
+          restored = recoverPendingHours(repaired);
+          if (restored !== repaired) logEvent("intake.recovered_spoken_hours", { hours: restored.hours });
           const introductionText = saved.messages
             .filter((m) => m.role === "user" && /\bmy name is\b/i.test(m.text))
             .at(-1)?.text;
@@ -475,6 +476,7 @@ export default function Home() {
           accepted: false,
         };
       } else result = answerIntake(state.current, text);
+      logEvent("intake.answer", { stage: intake.stage, accepted: result.accepted, nextStage: currentIntake(result.workspace).stage });
       recordLocal(
         result.workspace,
         text,

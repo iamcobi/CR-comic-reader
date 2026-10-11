@@ -204,7 +204,7 @@ export function answerIntake(
       return {
         workspace: next,
         answer:
-          "That gives me a deadline, but I need your usable coding time. About how many hours can you work, excluding sleep? For example: 12 hours. If you aren’t sure, say so.",
+          "I haven’t been able to determine your coding hours from that answer. You can say “about four hours,” type “4 hours,” or tell me you aren’t sure.",
         accepted: false,
       };
     next.hours = hours;

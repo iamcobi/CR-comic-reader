@@ -96,3 +96,8 @@ assert.equal(
   "What is your name?",
 );
 console.log("PASS Questions without mutations remain valid");
+const solo = saveIntroduction({...w,messages:[]}, "I'm the only person in the team. My name is Collins. I'm a beginner in Python.");
+assert.equal(solo.workspace.members.length,1);
+assert.equal(currentIntake(solo.workspace).stage,'experience');
+assert.doesNotMatch(solo.answer,/is that everyone/i);
+console.log('PASS Explicit only-person team answer does not ask whether anyone else is included');

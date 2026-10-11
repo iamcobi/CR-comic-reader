@@ -2,18 +2,33 @@
 
 An assistant-first hackathon companion: introduce your team, attach the event rules, and talk through a realistic project and game plan. Pip has 30 SVG gestures and can grow extra arms for multitasking.
 
-## Run locally
+## Run on your own computer
 
-Use Node.js 22.13 or later.
+### Windows: double-click launcher
+
+1. Install [Node.js LTS](https://nodejs.org/) (22.13 or newer). Restart any open terminals after installation.
+2. On GitHub, choose **Code → Download ZIP**, then **Extract All**. Open the extracted folder containing `START-PIP.bat`. Do not run it from inside the ZIP.
+3. Double-click **START-PIP.bat**. On the first run it installs dependencies and creates `.env` from the example. Internet access is needed for installation and live AI/voice.
+4. For live Pip, open `.env` in a text editor and fill in your own `NVIDIA_API_KEY` and `ELEVENLABS_API_KEY`. Save it, stop the server with Ctrl+C, then click the launcher again. Never share this file or commit your keys. You can explore Demo mode in Settings without keys.
+5. The launcher starts the server and opens **http://127.0.0.1:5173/** once it is ready. Keep the terminal window open while using Pip; press Ctrl+C to stop it.
+
+Your team, documents, and conversation stay in your browser on this computer. The repository does not include the creator's API keys or private workspace. Use the same browser and URL to return to your saved workspace.
+
+If the launcher says Node is missing, install Node.js and reopen it. If dependency installation fails, check your internet connection and try again. Only one server can run from a project folder at a time. If port 5173 is in use, close the other server window first. For a different port, set `PIP_PORT` in a terminal before launching; changing ports creates a different browser workspace.
+
+### macOS/Linux or terminal setup
+
+Use Node.js 22.13 or newer:
 
 ```sh
 npm install
 cp .env.example .env
+# Add your own NVIDIA and ElevenLabs keys to .env.
 npm run dev
 ```
 
-On Windows, use `Copy-Item .env.example .env` instead of `cp`.
-Add your NVIDIA and ElevenLabs keys to `.env`. Open http://localhost:5180. Actual keys are deliberately excluded from Git.
+On Windows, the equivalent copy command is `Copy-Item .env.example .env`. Open **http://127.0.0.1:5173/**.
+
 NVIDIA is the default brain. The separate Gemini adapter can be configured later. ElevenLabs handles microphone transcription and Chris's expressive voice; the configured voice model is V4 Turbo. Account availability and quotas depend on your provider accounts.
 
 ## How it works
@@ -37,7 +52,7 @@ node node_modules/typescript/bin/tsc --noEmit
 npm run build
 ```
 
-There are 80 automated checks covering actions, intake, streaming, voice lifecycle, and the missing-team regression. Provider and microphone tests use synthetic data or mocks. Actual microphone use requires browser permission.
+There are 84 automated checks covering actions, intake, streaming, voice lifecycle, and the missing-team regression. Provider and microphone tests use synthetic data or mocks. Actual microphone use requires browser permission.
 
 See [START-HERE.md](START-HERE.md) for a beginner-friendly walkthrough and [MOTION-CATALOG.md](MOTION-CATALOG.md) for every gesture.
 
