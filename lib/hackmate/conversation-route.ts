@@ -7,6 +7,7 @@ export function isContextQuestion(text: string) {
     !/\b(?:don't have|do not have|no documents|no rules)\b/i.test(text);
 }
 export function conversationAction(text: string, w: Workspace): AIInput["action"] {
+  if (/^(?:why|how|what|which|could you explain|can you explain)\b/i.test(text.trim())) return "chat";
   if (isContextQuestion(text) && !/\b(?:make|create|generate|suggest|recommend)\b/i.test(text)) return "chat";
   if (w.ideas.length && /\b(?:explain|elaborate|describe|compare|details|see|show|made up|already)\b/i.test(text) &&
       !/\b(?:new|different|more ideas|another)\b/i.test(text)) return "chat";

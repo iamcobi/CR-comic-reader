@@ -151,7 +151,10 @@ export function applyOperations(
     }
     if (op.type === "set_event") {
       if (op.event !== undefined) next.event = op.event;
-      if (op.hours !== undefined) next.hours = op.hours;
+      if (op.hours !== undefined) {
+        next.hours = op.hours;
+        if (next.intake) next.intake.confirmed = [...new Set([...(next.intake.confirmed || []), "hours"])];
+      }
       if (op.goal !== undefined) next.goal = op.goal;
     }
     if (op.type === "select_idea") {

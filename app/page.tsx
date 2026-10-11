@@ -24,12 +24,14 @@ import {
   normalizeLevel,
 } from "@/lib/hackmate/intake";
 import { conversationAction, isContextQuestion, repairClockHours, recoverPendingHours } from "@/lib/hackmate/conversation-route";
+import { rememberContext } from "@/lib/hackmate/context-memory";
 import { readDocuments } from "@/lib/hackmate/read-documents";
 import { saveIntroduction } from "@/lib/hackmate/team-introduction";
 import {
   logEvent,
   installRequestLogging,
   exportLogs,
+  readLogs,
 } from "@/lib/hackmate/diagnostics";
 import { loadWorkspace, saveWorkspace } from "@/lib/hackmate/storage";
 import { applyOperations } from "@/lib/hackmate/operations";
@@ -52,6 +54,7 @@ import type {
 type Sheet = "team" | "plan" | "settings" | "history" | "motions" | null;
 import { Companion } from "@/components/companion";
 export default function Home() {
+  const [diagnosticText, setDiagnosticText] = useState("");
   const [w, setW] = useState<Workspace>(freshWorkspace),
     [ready, setReady] = useState(false),
     [serverStatus, setServerStatus] = useState<{
@@ -93,7 +96,7 @@ export default function Home() {
   state.current = w;
   useEffect(() => installRequestLogging(), []);
   function animate(next: Motion, persistent = false, minimum = 0) {
-    logEvent("motion", { name: next });
+    if (motionRef.current !== next) logEvent("motion", { name: next });
     if (timeout.current) clearTimeout(timeout.current);
     motionRef.current = next;
     setMotion(next);
@@ -414,6 +417,17 @@ export default function Home() {
       resetWorkspace();
       return;
     }
+    const beforeStage = currentIntake(state.current).stage;
+    const remembered = rememberContext(state.current, text);
+    if (remembered.fields.length) {
+      state.current = remembered.workspace;
+      setW(remembered.workspace);
+      logEvent("context.saved", { fields: remembered.fields.join(","), stage: currentIntake(remembered.workspace).stage });
+      if (beforeStage !== "done" && !/[?]|\b(?:what|why|how|which|show|suggest|give)\b/i.test(text)) {
+        recordLocal(remembered.workspace, text, `Got it. ${questions[currentIntake(remembered.workspace).stage]}`, "saving");
+        return;
+      }
+    }
     const introduction = saveIntroduction(state.current, text);
     if (introduction) {
       recordLocal(
@@ -499,6 +513,13 @@ export default function Home() {
     const controller = new AbortController();
     request.current = controller;
     const action = conversationAction(text, snapshot);
+    if (action === "plan" && (pending?.length || snapshot.tasks.length) && !/\b(new|replace|redo|regenerate|different)\b/i.test(text)) {
+      recordLocal(snapshot, text, "Our game plan is already here. Let’s review the next task together.", "planning");
+      setSheet("plan");
+      setBusy(false);
+      sending.current = false;
+      return;
+    }
     if (action === "plan" && !snapshot.selectedIdea) {
       say(
         "Let’s choose an idea first. Ask me for project ideas, then pick one to plan.",
@@ -584,8 +605,14 @@ export default function Home() {
                 text?: string;
                 result?: AIResult;
                 error?: string;
+                status?: string;
+                reason?: string;
               };
               if (version !== session.current) return;
+              if (event.status === "retrying") {
+                logEvent("assistant.retrying", { serverId, reason: event.reason || "unknown" });
+                setReply("The connection stalled. I’m retrying your request once; your saved information is still here.");
+              }
               if (event.error) throw new Error(event.error);
               if (event.text !== undefined) {
                 if (!firstText) {
@@ -713,6 +740,7 @@ export default function Home() {
       }
       next = {
         ...next,
+        intake: currentIntake(next),
         messages: [
           ...next.messages,
           {
@@ -748,6 +776,8 @@ export default function Home() {
     } catch (e) {
       logEvent("assistant.failed", { serverId, canceled: controller.signal.aborted, milliseconds: Math.round(performance.now() - startedAt), category: e instanceof SyntaxError ? "invalid_response" : "request_or_stream" });
       if (version !== session.current) return;
+      voice.stopSpeaking();
+      setReply("I couldn’t finish that reply. Your saved information is still here; you don’t need to repeat the setup.");
       setError(e instanceof Error ? e.message : "Something went wrong.");
       animate("error");
     } finally {
@@ -1475,6 +1505,8 @@ export default function Home() {
               >
                 Export diagnostic logs
               </button>
+              <button onClick={() => void readLogs().then(logs => setDiagnosticText(JSON.stringify(logs.filter(log => log.event !== "motion").slice(-120), null, 2))).catch(() => setError("Diagnostics could not be read."))}>View recent diagnostics</button>
+              {diagnosticText && <pre style={{maxHeight: 280, overflow: "auto", whiteSpace: "pre-wrap", fontSize: 11}}>{diagnosticText}</pre>}
               <p className="note">
                 The last 500 request, save, action, motion, and voice events
                 stay in this browser across reloads and workspace resets. Logs

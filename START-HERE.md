@@ -107,7 +107,7 @@ For ordinary conversation, the first completed sentence begins voice generation 
 
 Under Settings, choose **Export diagnostic logs**. It downloads a JSON file with the last 500 request, action, save, gesture, and voice events. These stay in a separate browser database after reloading or resetting your hackathon. They exclude prompts, documents, audio, and keys. Server terminal logs include matching request IDs. API response headers measure time to headers, while `assistant.committed` marks a completed response.
 
-Run `npm test` for all 84 automated checks, including the failed conversational introduction and queued-speech cancellation. Tests cannot replace checking your physical microphone and permissions.
+Run `npm test` for all 93 automated checks, including the failed conversational introduction and queued-speech cancellation. Tests cannot replace checking your physical microphone and permissions.
 
 
 ## How image PDFs are read

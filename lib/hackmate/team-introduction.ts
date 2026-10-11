@@ -3,7 +3,7 @@ import { advance, currentIntake, questions, normalizeLevel } from "./intake";
 // Common self-introductions save locally before any AI confirmation is shown.
 // Ambiguous introductions stay with the AI, which must return a validated operation.
 export function saveIntroduction(w: Workspace, text: string) {
-  if (currentIntake(w).stage !== "team") return null;
+  if (w.intake?.stage !== "team" && currentIntake(w).stage !== "team") return null;
   const named = text.match(/\bmy name is\s+([A-Za-z][A-Za-z'-]{0,59})/i);
   if (!named) return null;
   const name = named[1];

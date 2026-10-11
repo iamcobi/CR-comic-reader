@@ -6,7 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "test": "node scripts/test-ai.mjs && node scripts/test-conversation.mjs && node scripts/test-flow.mjs && node scripts/test-voice.mjs && node scripts/test-team-reliability.mjs && node scripts/test-pdf.mjs && node scripts/test-log-review.mjs",
+    "test": "node scripts/test-ai.mjs && node scripts/test-conversation.mjs && node scripts/test-flow.mjs && node scripts/test-voice.mjs && node scripts/test-team-reliability.mjs && node scripts/test-pdf.mjs && node scripts/test-log-review.mjs && node scripts/test-recovery.mjs",
     "install:ci": "node scripts/install-ci.mjs",
     "dev": "node scripts/run-framework.mjs dev",
     "build": "node scripts/run-framework.mjs build",

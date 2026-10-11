@@ -11,7 +11,7 @@ export const stages = [
   "done",
 ] as const;
 export type IntakeStage = (typeof stages)[number];
-export type Intake = { stage: IntakeStage; skipped: string[] };
+export type Intake = { stage: IntakeStage; skipped: string[]; confirmed?: string[] };
 export const questions: Record<IntakeStage, string> = {
   event:
     "Let’s meet our hackathon first. What’s its name? Include the university, location, or date if you know them.",
@@ -65,7 +65,17 @@ export function currentIntake(w: Workspace): Intake {
       )
         return { ...w.intake, stage: "documents" };
     }
-    return w.intake;
+    const known: Record<string, boolean> = {
+      event: Boolean(w.event.trim()),
+      team: Boolean(w.members.length && w.members.every(m => m.name.trim() && m.skills.trim() && m.level)),
+      experience: Boolean(w.pastExperience?.trim()),
+      goal: Boolean(w.goal.trim()),
+      documents: w.documents.some(d => d.id !== "sample" && !d.id.startsWith("research-")),
+      hours: Boolean(w.intake.confirmed?.includes("hours")),
+    };
+    let index = stages.indexOf(w.intake.stage);
+    while (index < stages.length - 1 && (known[stages[index]] || w.intake.skipped.includes(stages[index]))) index++;
+    return { ...w.intake, stage: stages[index] };
   }
   // Existing work is preserved; ask only for information we can’t identify.
   return {
@@ -85,10 +95,12 @@ export function currentIntake(w: Workspace): Intake {
   };
 }
 export function advance(w: Workspace, skipped = false): Workspace {
-  const intake = currentIntake(w);
+  const intake = w.intake || currentIntake(w);
   return {
     ...w,
     intake: {
+      ...intake,
+      confirmed: [...new Set([...(intake.confirmed || []), ...(intake.stage === "hours" && !skipped ? ["hours"] : [])])],
       stage:
         stages[Math.min(stages.indexOf(intake.stage) + 1, stages.length - 1)],
       skipped: skipped

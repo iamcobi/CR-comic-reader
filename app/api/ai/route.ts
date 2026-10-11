@@ -45,6 +45,7 @@ async function handlePOST(request: Request) {
               AbortSignal.any([request.signal, cancel.signal]),
             );
           } catch (error) {
+            console.warn("[Pip server]", JSON.stringify({ event: "assistant.stream_failed", canceled: request.signal.aborted || cancel.signal.aborted, status: error instanceof PublicError ? error.status : 502 }));
             emit({
               error:
                 error instanceof PublicError
@@ -67,7 +68,7 @@ async function handlePOST(request: Request) {
         },
       });
     }
-    return Response.json(await runAI(result.data));
+    return Response.json(await runAI(result.data, request.signal));
   } catch (error) {
     if (error instanceof PublicError)
       return Response.json({ error: error.message }, { status: error.status });
