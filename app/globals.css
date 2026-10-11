@@ -1,0 +1,1400 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+:root {
+  color-scheme: light;
+  --ink: #202020;
+  --muted: #777;
+  --line: #e8e8e8;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #fafafa;
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+  color: inherit;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #444;
+  outline-offset: 5px;
+}
+button {
+  border: 0;
+  background: none;
+}
+input,
+textarea,
+select {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  background: white;
+  color: #202020;
+}
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #aaa;
+  outline-offset: 2px;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+.app {
+  max-width: 1440px;
+  margin: auto;
+  min-height: 100svh;
+  padding: 32px 52px 20px;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  font:
+    800 30px "Manrope",
+    sans-serif;
+  letter-spacing: -3px;
+  display: flex;
+  align-items: center;
+}
+.brand span {
+  color: #909090;
+}
+.brand small {
+  font: 600 14px "DM Sans";
+  letter-spacing: -0.3px;
+  margin-left: 17px;
+}
+nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+nav button {
+  font-size: 13px;
+  padding: 6px 0;
+}
+nav span {
+  color: #999;
+  margin-left: 5px;
+  font-size: 11px;
+}
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.icon:hover {
+  background: #ededed;
+}
+.mode-label {
+  font-size: 11px;
+  letter-spacing: 0.2px;
+  color: #888;
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #888;
+}
+.stage {
+  flex: 1;
+  min-height: 470px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px 0;
+}
+.stage-eyebrow {
+  font-size: 9px;
+  color: #a0a0a0;
+  letter-spacing: 2.2px;
+  margin-bottom: 0;
+}
+.companion {
+  width: 300px;
+  height: 240px;
+  position: relative;
+  margin: 14px auto 0;
+  isolation: isolate;
+}
+.character {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  left: 20px;
+  top: -10px;
+  transform-origin: 50% 90%;
+}
+.shadow {
+  position: absolute;
+  left: 65px;
+  bottom: 18px;
+  width: 170px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00000013;
+  filter: blur(7px);
+}
+.halo {
+  position: absolute;
+  left: 35px;
+  top: 10px;
+  width: 230px;
+  height: 230px;
+  border: 1px solid #eeeeee;
+  border-radius: 50%;
+  opacity: 0;
+}
+.motion-mark {
+  position: absolute;
+  right: 24px;
+  top: 39px;
+  font-size: 24px;
+  color: #797979;
+}
+.state-label {
+  font-size: 10px;
+  color: #999;
+  height: 19px;
+  letter-spacing: 0.3px;
+}
+h1 {
+  font: 500 28px "Manrope";
+  letter-spacing: -1.1px;
+  margin: 7px 0 14px;
+}
+.reply {
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 600px;
+  text-align: center;
+  margin: 0;
+  white-space: pre-line;
+  color: #626262;
+  max-height: 180px;
+  overflow: auto;
+}
+.receipt {
+  font-size: 11px;
+  margin-top: 15px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.conversation {
+  width: min(680px, 100%);
+  margin: 18px auto 0;
+}
+.suggestions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.suggestions button {
+  border: 1px solid #e1e1e1;
+  border-radius: 20px;
+  font-size: 11px;
+  padding: 8px 14px;
+  background: #fff;
+}
+.suggestions button:hover {
+  border-color: #999;
+}
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: white;
+  border: 1px solid #dedede;
+  border-radius: 24px;
+  box-shadow: 0 4px 16px #00000003;
+  padding: 8px 10px;
+}
+.composer input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  font-size: 13px;
+  background: transparent;
+  padding: 10px 4px;
+}
+.composer input:focus {
+  outline: none;
+}
+.send {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #222;
+  color: white;
+  flex-shrink: 0;
+}
+.mic.active {
+  background: #222;
+  color: white;
+}
+.conversation-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 13px 6px;
+  color: #999;
+  font-size: 10px;
+}
+.conversation-footer button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  color: #666;
+  font-size: 10px;
+}
+.conversation-footer > span {
+  flex: 1;
+  text-align: center;
+}
+footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #aaa;
+  margin-top: 25px;
+}
+footer button {
+  font-size: 10px;
+  color: #888;
+}
+.idea-choices {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.idea-choices button {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 12px;
+  padding: 10px 13px;
+  background: white;
+  display: flex;
+  gap: 12px;
+}
+.idea-choices .selected {
+  border-color: #333;
+}
+.idea-choices small,
+.idea-choices span {
+  color: #999;
+  font-size: 10px;
+}
+.text-button {
+  font-size: 12px;
+  margin: 12px;
+}
+.error {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  font-size: 12px;
+  background: #eee;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  color: #333;
+}
+.error button {
+  display: flex;
+}
+dialog {
+  border: 1px solid #ddd;
+  border-radius: 22px;
+  width: min(760px, calc(100% - 24px));
+  max-height: 87svh;
+  padding: 0;
+  background: #fafafa;
+  color: #222;
+  box-shadow: 0 24px 90px #00000025;
+}
+dialog::backdrop {
+  background: #00000028;
+  backdrop-filter: blur(5px);
+}
+.sheet {
+  padding: 28px;
+}
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.sheet h2 {
+  font: 500 25px "Manrope";
+  letter-spacing: -0.8px;
+  margin: 0;
+}
+.sheet p {
+  color: #777;
+  line-height: 1.65;
+  font-size: 13px;
+}
+.sheet > button,
+.proposal button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  margin: 12px 8px 4px 0;
+}
+.sheet label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 18px 0;
+  font-size: 12px;
+}
+.member {
+  display: flex;
+  gap: 16px;
+  padding: 17px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: #e8e8e8;
+  border-radius: 50%;
+  font-size: 15px;
+}
+.member > div {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.member strong {
+  min-width: 90px;
+  font-size: 13px;
+}
+.member input {
+  flex: 1;
+  min-width: 120px;
+  font-size: 12px;
+}
+.member select {
+  font-size: 11px;
+}
+.task {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+.task > div {
+  flex: 1;
+}
+.task strong {
+  font-size: 13px;
+}
+.task p {
+  font-size: 12px;
+  margin: 8px 0;
+}
+.task small {
+  color: #888;
+  font-size: 10px;
+}
+.task select {
+  font-size: 11px;
+}
+.document {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+}
+.document button {
+  display: flex;
+}
+.note {
+  display: block;
+  font-size: 11px !important;
+  line-height: 1.7;
+  color: #999;
+  margin-top: 20px;
+}
+.proposal {
+  padding: 18px;
+  background: #eaeaea;
+  border-radius: 12px;
+  font-size: 13px;
+}
+.history article {
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+.history small {
+  font-size: 10px;
+  color: #aaa;
+}
+.history .user {
+  padding-left: 22px;
+  border-left: 2px solid #ddd;
+}
+.history p {
+  white-space: pre-line;
+}
+.motion-preview {
+  text-align: center;
+  border: 1px solid #e4e4e4;
+  border-radius: 16px;
+  padding-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: #fafafa;
+  z-index: 2;
+}
+.motion-preview .companion {
+  transform: scale(0.8);
+  margin-top: -15px;
+  margin-bottom: -35px;
+}
+.motion-preview strong {
+  font-size: 12px;
+}
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+.motion-grid button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 7px;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  padding: 14px;
+  background: white;
+}
+.motion-grid button[aria-pressed="true"] {
+  border-color: #333;
+}
+.motion-grid small {
+  color: #aaa;
+  font-size: 10px;
+}
+.motion-grid strong {
+  font-size: 12px;
+}
+.motion-grid span {
+  font-size: 10px;
+  color: #888;
+  line-height: 1.5;
+}
+@media (max-width: 650px) {
+  .app {
+    padding: 22px 20px 16px;
+  }
+  nav {
+    gap: 14px;
+  }
+  nav button {
+    font-size: 11px;
+  }
+  .brand small {
+    display: none;
+  }
+  .mode-label {
+    margin-top: 20px;
+    font-size: 9px;
+  }
+  .stage {
+    min-height: 420px;
+    padding: 20px 0;
+  }
+  .stage-eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.3px;
+  }
+  .companion {
+    transform: scale(0.9);
+    margin-bottom: -15px;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  .reply {
+    font-size: 14px;
+  }
+  .suggestions {
+    gap: 6px;
+  }
+  .suggestions button {
+    font-size: 10px;
+    padding: 8px 10px;
+  }
+  .conversation-footer {
+    gap: 8px;
+    font-size: 9px;
+  }
+  .conversation-footer > span {
+    display: none;
+  }
+  .conversation-footer button:last-child {
+    margin-left: auto;
+  }
+  footer {
+    font-size: 9px;
+  }
+  footer button {
+    font-size: 9px;
+  }
+  .sheet {
+    padding: 20px;
+  }
+  .sheet h2 {
+    font-size: 21px;
+  }
+  .motion-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .task {
+    flex-direction: column;
+  }
+  .composer input {
+    font-size: 12px;
+  }
+  .member strong {
+    width: 100%;
+  }
+}
+
+/* 30 event gestures. Only the active data-motion animates. */
+@keyframes motion-idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.companion[data-motion="idle"] .character {
+  animation: motion-idle 5000ms ease-in-out infinite;
+}
+@keyframes motion-greeting {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  60% {
+    transform: rotate(-8deg);
+  }
+  40%,
+  80% {
+    transform: rotate(8deg);
+  }
+}
+.companion[data-motion="greeting"] .character {
+  animation: motion-greeting 2200ms ease-in-out infinite;
+}
+@keyframes motion-listening {
+  0%,
+  100% {
+    transform: rotate(-9deg) translateX(-5px);
+  }
+  50% {
+    transform: rotate(-12deg) translateX(-7px);
+  }
+}
+.companion[data-motion="listening"] .character {
+  animation: motion-listening 1800ms ease-in-out infinite;
+}
+@keyframes motion-transcribing {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  35% {
+    transform: translateY(2px) scaleY(0.96);
+  }
+  70% {
+    transform: translateY(-3px) scaleY(1.02);
+  }
+}
+.companion[data-motion="transcribing"] .character {
+  animation: motion-transcribing 1200ms ease-in-out infinite;
+}
+@keyframes motion-thinking {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg) translateY(-6px);
+  }
+}
+.companion[data-motion="thinking"] .character {
+  animation: motion-thinking 2600ms ease-in-out infinite;
+}
+@keyframes motion-searching {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-14px) rotate(-6deg);
+  }
+  75% {
+    transform: translateX(14px) rotate(6deg);
+  }
+}
+.companion[data-motion="searching"] .character {
+  animation: motion-searching 1800ms ease-in-out infinite;
+}
+@keyframes motion-reading {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(-3deg) translateY(3px);
+  }
+  50% {
+    transform: rotate(3deg) translateY(6px);
+  }
+  80% {
+    transform: rotate(-2deg) translateY(3px);
+  }
+}
+.companion[data-motion="reading"] .character {
+  animation: motion-reading 2200ms ease-in-out infinite;
+}
+@keyframes motion-understanding {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  35% {
+    transform: translateY(8px) scaleY(0.94);
+  }
+  70% {
+    transform: translateY(-2px);
+  }
+}
+.companion[data-motion="understanding"] .character {
+  animation: motion-understanding 1000ms ease-in-out infinite;
+}
+@keyframes motion-speaking {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  25% {
+    transform: scaleY(1.025) translateY(-2px);
+  }
+  55% {
+    transform: scaleY(0.98);
+  }
+  80% {
+    transform: scaleY(1.01);
+  }
+}
+.companion[data-motion="speaking"] .character {
+  animation: motion-speaking 900ms ease-in-out infinite;
+}
+@keyframes motion-asking {
+  0%,
+  100% {
+    transform: rotate(8deg);
+  }
+  45% {
+    transform: rotate(13deg) translateY(-3px);
+  }
+}
+.companion[data-motion="asking"] .character {
+  animation: motion-asking 1600ms ease-in-out infinite;
+}
+@keyframes motion-suggesting {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-15px) scale(1.04);
+  }
+  60% {
+    transform: translateY(3px) scale(0.98);
+  }
+}
+.companion[data-motion="suggesting"] .character {
+  animation: motion-suggesting 1700ms ease-in-out infinite;
+}
+@keyframes motion-choosing {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  35% {
+    transform: translateX(8px) rotate(7deg);
+  }
+  65% {
+    transform: translateX(8px) translateY(5px) rotate(0);
+  }
+}
+.companion[data-motion="choosing"] .character {
+  animation: motion-choosing 1200ms ease-in-out infinite;
+}
+@keyframes motion-planning {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-7px) translateY(-4px);
+  }
+  50% {
+    transform: translateX(7px) translateY(-4px);
+  }
+  75% {
+    transform: translateY(3px);
+  }
+}
+.companion[data-motion="planning"] .character {
+  animation: motion-planning 2400ms ease-in-out infinite;
+}
+@keyframes motion-adding-task {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(4deg);
+  }
+  75% {
+    transform: translateY(7px) scaleY(0.93);
+  }
+}
+.companion[data-motion="adding-task"] .character {
+  animation: motion-adding-task 1600ms ease-in-out infinite;
+}
+@keyframes motion-assigning-task {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(18px) rotate(9deg);
+  }
+  70% {
+    transform: translateX(10px) rotate(3deg);
+  }
+}
+.companion[data-motion="assigning-task"] .character {
+  animation: motion-assigning-task 1400ms ease-in-out infinite;
+}
+@keyframes motion-completing-task {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.93) translateY(5px);
+  }
+  65% {
+    transform: scale(1.06) translateY(-5px);
+  }
+}
+.companion[data-motion="completing-task"] .character {
+  animation: motion-completing-task 1300ms ease-in-out infinite;
+}
+@keyframes motion-celebrating {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  20% {
+    transform: translateY(-20px) rotate(-12deg);
+  }
+  45% {
+    transform: translateY(0) rotate(0);
+  }
+  70% {
+    transform: translateY(-15px) rotate(12deg);
+  }
+}
+.companion[data-motion="celebrating"] .character {
+  animation: motion-celebrating 2200ms ease-in-out infinite;
+}
+@keyframes motion-welcoming-member {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(-10deg) translateX(-7px);
+  }
+  60% {
+    transform: rotate(5deg) translateY(-4px);
+  }
+}
+.companion[data-motion="welcoming-member"] .character {
+  animation: motion-welcoming-member 1800ms ease-in-out infinite;
+}
+@keyframes motion-team-checkin {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.06) translateY(-4px);
+  }
+  70% {
+    transform: scale(1.02) rotate(-3deg);
+  }
+}
+.companion[data-motion="team-checkin"] .character {
+  animation: motion-team-checkin 2300ms ease-in-out infinite;
+}
+@keyframes motion-encouraging {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-5deg) translateY(-4px);
+  }
+  55% {
+    transform: rotate(5deg) translateY(-7px);
+  }
+  80% {
+    transform: rotate(0) translateY(-2px);
+  }
+}
+.companion[data-motion="encouraging"] .character {
+  animation: motion-encouraging 1800ms ease-in-out infinite;
+}
+@keyframes motion-spotting-blocker {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px) rotate(-3deg);
+  }
+  40% {
+    transform: translateX(5px) rotate(3deg);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+.companion[data-motion="spotting-blocker"] .character {
+  animation: motion-spotting-blocker 1500ms ease-in-out infinite;
+}
+@keyframes motion-resolving-blocker {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(0.94) rotate(-5deg);
+  }
+  60% {
+    transform: scale(1.04) rotate(5deg) translateY(-8px);
+  }
+}
+.companion[data-motion="resolving-blocker"] .character {
+  animation: motion-resolving-blocker 2000ms ease-in-out infinite;
+}
+@keyframes motion-deadline-reminder {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(-2deg) translateY(-4px);
+  }
+  75% {
+    transform: rotate(2deg) translateY(-4px);
+  }
+}
+.companion[data-motion="deadline-reminder"] .character {
+  animation: motion-deadline-reminder 1600ms ease-in-out infinite;
+}
+@keyframes motion-focusing {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.96) translateY(2px);
+  }
+}
+.companion[data-motion="focusing"] .character {
+  animation: motion-focusing 2200ms ease-in-out infinite;
+}
+@keyframes motion-explaining {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(-7deg) translateX(-5px);
+  }
+  65% {
+    transform: rotate(7deg) translateX(5px) translateY(-3px);
+  }
+}
+.companion[data-motion="explaining"] .character {
+  animation: motion-explaining 2200ms ease-in-out infinite;
+}
+@keyframes motion-remembering {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  40% {
+    transform: rotate(-8deg) translateY(-8px);
+  }
+  70% {
+    transform: rotate(-3deg) translateY(-3px);
+  }
+}
+.companion[data-motion="remembering"] .character {
+  animation: motion-remembering 1600ms ease-in-out infinite;
+}
+@keyframes motion-saving {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px) scale(0.97);
+  }
+  80% {
+    transform: translateY(-1px);
+  }
+}
+.companion[data-motion="saving"] .character {
+  animation: motion-saving 1100ms ease-in-out infinite;
+}
+@keyframes motion-exporting {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-12px);
+  }
+  70% {
+    transform: translateY(6px) scaleY(0.96);
+  }
+}
+.companion[data-motion="exporting"] .character {
+  animation: motion-exporting 1600ms ease-in-out infinite;
+}
+@keyframes motion-error {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-6deg) scale(0.98);
+  }
+  50% {
+    transform: rotate(6deg) scale(0.98);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+}
+.companion[data-motion="error"] .character {
+  animation: motion-error 1300ms ease-in-out infinite;
+}
+@keyframes motion-goodbye {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(10deg) translateX(5px);
+  }
+  50% {
+    transform: rotate(0);
+  }
+  75% {
+    transform: rotate(8deg) translateX(3px);
+  }
+}
+.companion[data-motion="goodbye"] .character {
+  animation: motion-goodbye 2200ms ease-in-out infinite;
+}
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(-23deg);
+  }
+  30% {
+    transform: rotate(-115deg);
+  }
+  50% {
+    transform: rotate(-80deg);
+  }
+  70% {
+    transform: rotate(-115deg);
+  }
+}
+.companion[data-motion="greeting"] .hand.right,
+.companion[data-motion="goodbye"] .hand.right {
+  animation: wave 1400ms ease-in-out infinite;
+}
+.companion[data-motion="celebrating"] .hand.left {
+  transform: rotate(130deg);
+}
+.companion[data-motion="celebrating"] .hand.right {
+  transform: rotate(-130deg);
+}
+.companion[data-motion="team-checkin"] .hand.left {
+  transform: rotate(-48deg);
+}
+.companion[data-motion="team-checkin"] .hand.right {
+  transform: rotate(48deg);
+}
+.companion[data-motion="assigning-task"] .hand.right,
+.companion[data-motion="explaining"] .hand.right {
+  transform: rotate(-90deg);
+}
+.companion[data-motion="reading"] .face {
+  transform: translateY(7px);
+}
+.companion[data-motion="listening"] .face {
+  transform: translateX(-4px);
+}
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.companion[data-motion="thinking"] .halo {
+  opacity: 1;
+  border-top-color: #999;
+  animation: orbit 2600ms linear infinite;
+}
+@keyframes talk {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1.8);
+  }
+}
+.companion[data-motion="speaking"] .mouth {
+  background: #555;
+  border-radius: 50%;
+  animation: talk 400ms ease-in-out infinite;
+}
+.companion[data-motion="focusing"] .face i {
+  transform: scaleY(0.65);
+}
+.companion[data-motion="asking"] .face i:first-child {
+  transform: scaleY(1.2);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .companion[data-motion="thinking"] .halo {
+    opacity: 1;
+  }
+  .motion-mark {
+    opacity: 1;
+  }
+}
+.companion-tap {
+  padding: 0;
+  display: block;
+  border-radius: 50%;
+  background: none;
+}
+.companion-tap:disabled {
+  opacity: 1;
+}
+.citations {
+  font-size: 11px;
+  margin: 12px auto 0;
+  max-width: 560px;
+  color: #777;
+}
+.citations summary {
+  cursor: pointer;
+  text-align: center;
+}
+.citations p {
+  line-height: 1.6;
+}
+.proposed-task {
+  padding: 15px 0;
+  border-bottom: 1px solid #d6d6d6;
+}
+.proposed-task p {
+  margin: 7px 0;
+}
+.proposed-task small {
+  color: #777;
+  font-size: 11px;
+}
+.idea-details {
+  font-size: 12px;
+  margin: 15px 0;
+  color: #777;
+}
+.idea-details summary {
+  cursor: pointer;
+  color: #333;
+}
+
+/* SVG rig: growth and gestures use separate nested groups so they never fight. */
+.pip-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pip-limb,
+.pip-extra {
+  transform: scale(0.02);
+  opacity: 0;
+  transition:
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease;
+}
+.companion[data-arms="true"] .pip-limb,
+.companion[data-extra="true"] .pip-extra {
+  transform: scale(1);
+  opacity: 1;
+}
+.pip-arm {
+  stroke: #050505;
+  stroke-width: 17px;
+  fill: none;
+  stroke-linecap: round;
+  transform-origin: 0 0;
+}
+.pip-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pip-blink 6s infinite;
+}
+.pip-smile {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes pip-blink {
+  0%,
+  44%,
+  48%,
+  100% {
+    transform: scaleY(1);
+  }
+  46% {
+    transform: scaleY(0.12);
+  }
+}
+@keyframes pip-wave {
+  0%,
+  100% {
+    transform: rotate(-18deg);
+  }
+  50% {
+    transform: rotate(24deg);
+  }
+}
+@keyframes pip-work {
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+@keyframes pip-talk {
+  0%,
+  100% {
+    transform: scaleY(0.8);
+  }
+  50% {
+    transform: scaleY(1.8);
+  }
+}
+.companion:is(
+    [data-motion="greeting"],
+    [data-motion="goodbye"],
+    [data-motion="welcoming-member"]
+  )
+  .right-arm {
+  animation: pip-wave 650ms ease-in-out infinite;
+}
+.companion:is(
+    [data-motion="planning"],
+    [data-motion="adding-task"],
+    [data-motion="saving"],
+    [data-motion="resolving-blocker"]
+  )
+  .pip-arm {
+  animation: pip-work 900ms ease-in-out infinite alternate;
+}
+.companion .extra-arm {
+  animation-delay: -450ms !important;
+}
+.companion[data-motion="celebrating"] .left-arm {
+  transform: rotate(60deg);
+}
+.companion[data-motion="celebrating"] .right-arm {
+  transform: rotate(-50deg);
+}
+.companion:is([data-motion="assigning-task"], [data-motion="explaining"])
+  .right-arm {
+  transform: rotate(70deg);
+}
+.companion[data-motion="reading"] .pip-arm {
+  transform: rotate(150deg);
+}
+.companion[data-motion="speaking"] .pip-smile {
+  animation: pip-talk 350ms ease-in-out infinite;
+}
+.companion[data-motion="focusing"] .pip-eyes {
+  transform: scaleY(0.65);
+  animation: none;
+}
+.companion[data-motion="error"] .pip-smile {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pip-limb,
+  .pip-extra {
+    transition: none;
+  }
+  .pip-eyes,
+  .pip-arm,
+  .pip-smile {
+    animation: none !important;
+  }
+}
+
+.companion[data-speaking="true"] .pip-smile {
+  animation: pip-talk 350ms ease-in-out infinite;
+}
+.team-add {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+}
+.team-add label {
+  min-width: 0;
+}
+.research-links {
+  max-width: 680px;
+  margin: 12px auto;
+  font-size: 12px;
+  padding: 0 20px;
+}
+.research-links a {
+  color: inherit;
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  header nav {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  header nav button {
+    font-size: 11px;
+  }
+  .team-add {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .companion[data-speaking="true"] .pip-smile {
+    animation: none;
+  }
+}
