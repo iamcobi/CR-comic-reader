@@ -42,7 +42,7 @@ You can describe the team naturally: “I’m Collins, I know React, and I’m a
 
 ## Documents and research
 
-Use the paperclip to attach a readable PDF, TXT, Markdown, or CSV, or paste the brief into the conversation when Pip asks. PDF text is extracted in the browser before NVIDIA receives it. Image-only/scanned PDFs need a readable text version; Pip shows a clear message rather than guessing rules. Each original file can be up to 50 MB. PDFs are limited to 80 pages and 100,000 extracted characters; combined extracted text and image content remains limited to 8 MB.
+Use the paperclip to attach a readable PDF, TXT, Markdown, or CSV, or paste the brief into the conversation when Pip asks. PDF text is extracted in the browser before NVIDIA receives it. Image-only/scanned pages use local OCR automatically. The worker renders each page and reads the words in its image; it does not upload the original PDF to an OCR service. Pip shows page progress and keeps page labels for citations. If one file fails, other readable files in the batch are still saved. Each original file can be up to 50 MB. PDFs are limited to 80 pages and 100,000 extracted characters; combined extracted text and image content remains limited to 8 MB.
 
 After learning the public event name, Pip searches for official event sources and previous hackathon project leads. Only the event name goes into the public search query. Research links are saved with the workspace. Search excerpts and old event pages are inspiration, not verified current rules; the official materials you supply remain necessary unless you explicitly say you do not have them.
 
@@ -97,7 +97,7 @@ Automated tests use synthetic data. Actual microphone access still needs your pe
 
 ## Boundaries
 
-GitHub/Discord account connections, a desktop floating window, shared multi-user state, and a system-wide shortcut remain future work. Demo mode is scripted and does not analyze event documents. Scanned/image-only slides need text in the current NVIDIA setup. Past-event search results require verification against the current official brief. Pip supports planning and team bonding; it cannot guarantee winning.
+GitHub/Discord account connections, a desktop floating window, shared multi-user state, and a system-wide shortcut remain future work. Demo mode is scripted and does not analyze event documents. Tiny lettering, unusual logos, and low-quality scans can still produce imperfect OCR; unreadable pages are marked in the extracted text. Past-event search results require verification against the current official brief. Pip supports planning and team bonding; it cannot guarantee winning.
 
 
 ## Team and voice reliability update
@@ -111,3 +111,12 @@ For ordinary conversation, the first completed sentence begins voice generation 
 Under Settings, choose **Export diagnostic logs**. It downloads a JSON file with the last 500 request, action, save, gesture, and voice events. These stay in a separate browser database after reloading or resetting your hackathon. They exclude prompts, documents, audio, and keys. Server terminal logs include matching request IDs. API response headers measure time to headers, while `assistant.committed` marks a completed response.
 
 Run `npm test` for all 61 automated checks, including the failed conversational introduction and queued-speech cancellation. Tests cannot replace checking your physical microphone and permissions.
+
+
+## How image PDFs are read
+
+Some PDFs store a picture of each slide instead of selectable text. `read-pdf.ts` first asks PDF.js for embedded text. When a page has little or no text, it renders that page to a canvas and uses Tesseract.js to recognize the image's words. Dark slides are inverted for better recognition. A second sparse-text pass helps with large chapter headings. Native text pages bypass OCR.
+
+`pdf-text.ts` keeps one `[Page n]` section per page and enforces page/text limits. `read-documents.ts` handles each file independently, so a broken upload cannot throw away its readable siblings. Resetting aborts reading and releases workers. Document logs record page counts, progress, recognized-character counts, and confidence, without storing the page contents in diagnostics.
+
+The OCR worker, WASM cores, and English model live under `public/ocr`, so recognition stays in the browser and needs no new API key. `node scripts/prepare-ocr-assets.mjs` refreshes these assets from the installed npm packages. Extraction takes longer for image pages. Sponsor logos and small text may need human verification; Pip must ask when facts are missing.

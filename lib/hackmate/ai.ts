@@ -362,7 +362,19 @@ function verifiedSources(sources: any[], documents: Brief[]) {
   return sources.filter((s) => {
     const d = documents.find((d) => d.id === s.documentId);
     if (!d || !s.quote.trim()) return false;
-    if (d.text) return d.text.includes(s.quote) && s.page === null;
+    const matchesQuote = (text: string) =>
+      text.replace(/\s+/g, " ").includes(s.quote.replace(/\s+/g, " "));
+    if (d.text) {
+      if (s.page === null) return matchesQuote(d.text);
+      const sections = [...d.text.matchAll(/\[Page (\d+)\]\n/g)];
+      const index = sections.findIndex(
+        (section) => Number(section[1]) === s.page,
+      );
+      if (index < 0) return false;
+      const start = sections[index].index! + sections[index][0].length;
+      const end = sections[index + 1]?.index ?? d.text.length;
+      return matchesQuote(d.text.slice(start, end));
+    }
     return d.mime === "application/pdf" || s.page === null;
   });
 }

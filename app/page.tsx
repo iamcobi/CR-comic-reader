@@ -23,6 +23,7 @@ import {
   isUnknown,
   normalizeLevel,
 } from "@/lib/hackmate/intake";
+import { readDocuments } from "@/lib/hackmate/read-documents";
 import { saveIntroduction } from "@/lib/hackmate/team-introduction";
 import {
   logEvent,
@@ -751,64 +752,35 @@ export default function Home() {
     }
   }
   async function upload(files: FileList | null) {
-    if (!files) return;
+    if (!files?.length || !ready || sending.current) return;
+    sending.current = true;
+    setBusy(true);
     setError("");
+    setReceipt("");
+    voice.stopSpeaking();
     animate("reading", true);
     const version = session.current;
+    const controller = new AbortController();
+    request.current = controller;
+    setReply("I’m reading your documents. Image pages will use local OCR.");
     try {
-      const added: Brief[] = [];
-      let size = state.current.documents.reduce(
-        (sum, d) => sum + (d.data?.length || d.text?.length || 0),
-        0,
+      const { added, failures } = await readDocuments(
+        Array.from(files),
+        state.current.documents.filter((d) => d.id !== "sample"),
+        state.current.provider,
+        {
+          signal: controller.signal,
+          onProgress: (filename, event) => {
+            if (version !== session.current) return;
+            setReply(
+              `${filename} · page ${event.page} of ${event.total} · ${event.phase === "ocr" ? `reading image text${event.percent === undefined ? "" : ` (${event.percent}%)`}` : "extracting text"}`,
+            );
+          },
+        },
       );
-      for (const f of Array.from(files)) {
-        if (f.size > 50 * 1024 * 1024)
-          throw new Error("Keep each file at 50 MB or smaller.");
-        const isPDF = f.type === "application/pdf" || /\.pdf$/i.test(f.name);
-        const text = /\.(txt|md|csv)$/i.test(f.name) || isPDF;
-        if (!text && state.current.provider === "nvidia")
-          throw new Error(
-            "NVIDIA can read text PDFs, TXT, and Markdown here. Please paste the text from image-only slides; I won’t guess unreadable rules.",
-          );
-        if (
-          !text &&
-          ![
-            "application/pdf",
-            "image/png",
-            "image/jpeg",
-            "image/webp",
-          ].includes(f.type)
-        )
-          throw new Error(
-            "Upload TXT, Markdown, CSV, PDF, PNG, JPG, or WebP. Export slides to PDF first.",
-          );
-        let content: string;
-        if (isPDF) {
-          const { readPDF } = await import("@/lib/hackmate/read-pdf");
-          content = await readPDF(f);
-        } else if (text) content = await f.text();
-        else
-          content = await new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result).split(",")[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(f);
-          });
-        size += content.length;
-        if (size > 8 * 1024 * 1024)
-          throw new Error(
-            "Keep the combined extracted text and image content under 8 MB. Larger PDFs are supported when their extracted text fits this limit.",
-          );
-        added.push({
-          id: crypto.randomUUID(),
-          name: f.name,
-          mime: text ? "text/plain" : f.type || "text/plain",
-          ...(text ? { text: content } : { data: content }),
-        });
-      }
-      if (state.current.documents.length + added.length > 12)
-        throw new Error("You can keep up to 12 documents.");
       if (version !== session.current) return;
+      if (!added.length)
+        throw new Error(failures.join("\n") || "No documents could be read.");
       let next = {
         ...state.current,
         documents: [
@@ -826,16 +798,28 @@ export default function Home() {
         messages: [
           ...next.messages,
           { role: "assistant" as const, text: answer },
-        ],
+        ].slice(-100),
       };
       state.current = next;
       setW(next);
+      setError(failures.join("\n"));
+      setReceipt(
+        `${added.length} document${added.length === 1 ? "" : "s"} read and saved`,
+      );
       say(answer, "reading");
+      animateSequence(["reading", "understanding", "saving"]);
     } catch (e) {
-      if (version !== session.current) return;
+      if (version !== session.current || controller.signal.aborted) return;
       setError(e instanceof Error ? e.message : "Could not read the file.");
+      setReply(
+        "I couldn’t finish reading those documents. Your existing work is kept.",
+      );
       animate("error");
     } finally {
+      if (version === session.current) {
+        setBusy(false);
+        sending.current = false;
+      }
       if (input.current) input.current.value = "";
     }
   }

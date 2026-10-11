@@ -21,6 +21,7 @@ NVIDIA is the default brain. The separate Gemini adapter can be configured later
 - `app/page.tsx` runs the conversation and applies validated changes to the workspace.
 - `lib/hackmate/intake.ts` asks for the event, team, prior experience, goal, official documents, and available time. Unknown details require an explicit answer.
 - `lib/hackmate/team-introduction.ts` immediately saves common self-introductions. More complex speech goes to the AI and must return real operations.
+- `lib/hackmate/read-pdf.ts` renders image-only pages and runs local Tesseract OCR. `pdf-text.ts` preserves page sections; `read-documents.ts` keeps readable files even when another file fails. OCR workers and English language data ship under `public/ocr`.
 - `lib/hackmate/ai.ts` calls the selected provider and validates replies. An unsupported claim that a change was saved is rejected.
 - `lib/hackmate/operations.ts` applies a whole action batch atomically.
 - `hooks/use-companion-voice.ts` records, transcribes, and speaks. Safe conversational replies begin speaking their first completed sentence while the rest arrives; later speech queues without interrupting it. Changes are confirmed after validation.
@@ -36,8 +37,8 @@ node node_modules/typescript/bin/tsc --noEmit
 npm run build
 ```
 
-There are 61 automated checks covering actions, intake, streaming, voice lifecycle, and the missing-team regression. Provider and microphone tests use synthetic data or mocks. Actual microphone use requires browser permission.
+There are 73 automated checks covering actions, intake, streaming, voice lifecycle, and the missing-team regression. Provider and microphone tests use synthetic data or mocks. Actual microphone use requires browser permission.
 
 See [START-HERE.md](START-HERE.md) for a beginner-friendly walkthrough and [MOTION-CATALOG.md](MOTION-CATALOG.md) for every gesture.
 
-GitHub and Discord account integrations, shared multi-user state, and the desktop floating companion are future work. PDFs need readable text with the current NVIDIA document path.
+GitHub and Discord account integrations, shared multi-user state, and the desktop floating companion are future work. PDFs use embedded text when available and local OCR for image-only pages, including with the NVIDIA provider. Each file may be up to 50 MB; PDFs are limited to 80 pages and 100,000 extracted characters. Very small or stylized lettering may still be imperfect.

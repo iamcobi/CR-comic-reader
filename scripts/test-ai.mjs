@@ -89,6 +89,58 @@ try {
       /unexpected format/,
     );
   });
+  await test("Extracted PDF citations verify exact words within the cited page", () => {
+    const request = input("chat");
+    request.workspace = {
+      ...request.workspace,
+      documents: [
+        {
+          id: "pdf",
+          name: "Rules.pdf",
+          mime: "text/plain",
+          text: "\n[Page 1]\nJudging rewards usefulness\nand originality.\n[Page 2]\nSubmit a working demo.",
+        },
+      ],
+    };
+    const result = validateResult(
+      {
+        answer: "Useful projects matter.",
+        sources: [
+          {
+            documentId: "pdf",
+            page: 1,
+            quote: "Judging rewards usefulness and originality.",
+          },
+        ],
+      },
+      request,
+    );
+    assert.equal(result.sources.length, 1);
+  });
+  await test("A real quote assigned to the wrong PDF page is rejected", () => {
+    const request = input("chat");
+    request.workspace = {
+      ...request.workspace,
+      documents: [
+        {
+          id: "pdf",
+          name: "Rules.pdf",
+          mime: "text/plain",
+          text: "\n[Page 1]\nJudging rewards usefulness.\n[Page 2]\nSubmit a working demo.",
+        },
+      ],
+    };
+    const result = validateResult(
+      {
+        answer: "A fact.",
+        sources: [
+          { documentId: "pdf", page: 2, quote: "Judging rewards usefulness." },
+        ],
+      },
+      request,
+    );
+    assert.equal(result.sources.length, 0);
+  });
   await test("Invented text citations are removed", () => {
     const r = validateResult(
       {
